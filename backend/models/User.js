@@ -13,6 +13,10 @@ const userSchema = new mongoose.Schema(
     },
 
     isDisabled: { type: Boolean, default: false },
+    otp: {
+      code: String,
+      expiresAt: Date,
+    },
   },
   { timestamps: true }
 );

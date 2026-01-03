@@ -1,5 +1,9 @@
 import express from "express";
-import { register, login } from "../controller/authController.js";
+import {
+  register,
+  login,
+  verifyOTP,
+} from "../controller/authController.js";
 
 const router = express.Router();
 
@@ -48,7 +52,7 @@ router.post("/register", register);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Đăng nhập
+ *     summary: Đăng nhập (bước 1 - mật khẩu)
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -68,10 +72,42 @@ router.post("/register", register);
  *                 example: 123456
  *     responses:
  *       200:
- *         description: Đăng nhập thành công
+ *         description: Mật khẩu đúng, OTP đã được gửi qua email
  *       401:
  *         description: Sai email hoặc mật khẩu
+ *       403:
+ *         description: Tài khoản bị khóa
  */
 router.post("/login", login);
+
+/**
+ * @swagger
+ * /api/auth/verify-otp:
+ *   post:
+ *     summary: Xác thực OTP (bước 2)
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - otp
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: 65f12c8e1b2a3c4d5e6f7890
+ *               otp:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: OTP đúng, đăng nhập thành công
+ *       400:
+ *         description: OTP sai hoặc hết hạn
+ */
+router.post("/verify-otp", verifyOTP);
 
 export default router;
