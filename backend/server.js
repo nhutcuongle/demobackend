@@ -10,7 +10,7 @@ import eventRoutes from "./routes/event.js";
 import reminderRoutes from "./routes/reminder.js";
 import userRoutes from "./routes/user.js";
 import hideExpiredEvents from "./cron/hideExpiredEvents.js";
-
+import adminRoutes from "./routes/admin.js";
 dotenv.config();
 
 const app = express();
@@ -25,6 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/reminders", reminderRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
