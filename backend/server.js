@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.js";
 import eventRoutes from "./routes/event.js";
 import reminderRoutes from "./routes/reminder.js";
 import userRoutes from "./routes/user.js";
+import hideExpiredEvents from "./cron/hideExpiredEvents.js";
 
 dotenv.config();
 
@@ -31,15 +32,12 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+mongoose.connect(MONGO_URI).then(() => {
+  console.log("MongoDB connected");
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
+  hideExpiredEvents(); // 👈 DÒNG BẮT BUỘC – THIẾU HIỆN TẠI
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
   });
+});
