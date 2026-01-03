@@ -8,6 +8,7 @@ const generateToken = (user) => {
     {
       id: user._id,
       role: user.role,
+      username: user.username,
     },
     process.env.JWT_SECRET,
     {
@@ -16,15 +17,13 @@ const generateToken = (user) => {
   );
 };
 
-
 /* REGISTER */
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
     const exist = await User.findOne({ email });
-    if (exist)
-      return res.status(400).json({ message: "Email đã tồn tại" });
+    if (exist) return res.status(400).json({ message: "Email đã tồn tại" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -38,7 +37,6 @@ export const register = async (req, res) => {
 
     res.status(201).json({
       message: "Đăng ký thành công",
-    
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -51,15 +49,13 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(404).json({ message: "Không tìm thấy user" });
+    if (!user) return res.status(404).json({ message: "Không tìm thấy user" });
 
     if (user.isDisabled)
       return res.status(403).json({ message: "Tài khoản bị khóa" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(401).json({ message: "Sai mật khẩu" });
+    if (!isMatch) return res.status(401).json({ message: "Sai mật khẩu" });
 
     const token = generateToken(user);
 
