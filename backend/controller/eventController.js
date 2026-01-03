@@ -1,8 +1,6 @@
   import Event from "../models/Event.js";
 
-  /* ================= CREATE EVENT ================= */
-  // - user: tạo cho chính mình
-  // - staff: tạo cho user khác
+
   export const createEvent = async (req, res) => {
     try {
       const { title, description, startTime, endTime, owner } = req.body;
@@ -40,8 +38,7 @@
     }
   };
 
-  /* ================= USER: GET MY EVENTS ================= */
-  // user chỉ thấy event của mình
+
   export const getMyEvents = async (req, res) => {
     try {
       const events = await Event.find({
@@ -55,8 +52,7 @@
     }
   };
 
-  /* ================= STAFF: GET ALL EVENTS ================= */
-  // staff chỉ xem, không sửa event user tạo
+
   export const getAllEvents = async (req, res) => {
     try {
       const events = await Event.find()
@@ -104,9 +100,7 @@
     }
   };
 
-  /* ================= DELETE EVENT ================= */
-  // ❌ user KHÔNG được xóa
-  // ✅ staff CHỈ xóa event do mình tạo
+  
   export const deleteEvent = async (req, res) => {
     try {
       const event = await Event.findById(req.params.id);
