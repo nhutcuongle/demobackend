@@ -1,97 +1,3 @@
-// import Event from "../models/Event.js";
-
-// /* CREATE EVENT */
-// export const createEvent = async (req, res) => {
-//   try {
-//     const { title, startTime, endTime } = req.body;
-
-//     if (!title) return res.status(400).json({ message: "Thiếu tiêu đề" });
-
-//     if (new Date(startTime) >= new Date(endTime))
-//       return res.status(400).json({ message: "Thời gian không hợp lệ" });
-
-//     const event = await Event.create({
-//       ...req.body,
-//       owner: req.user._id,
-//     });
-
-//     res.status(201).json(event);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-// /* GET EVENTS (user chỉ thấy của mình) */
-// export const getMyEvents = async (req, res) => {
-//   try {
-//     const events = await Event.find({
-//       owner: req.user._id,
-//       isHidden: false,
-//     });
-
-//     res.json(events);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-// /* UPDATE EVENT */
-// export const updateEvent = async (req, res) => {
-//   try {
-//     const event = await Event.findOneAndUpdate(
-//       { _id: req.params.id, owner: req.user._id },
-//       req.body,
-//       { new: true }
-//     );
-
-//     if (!event)
-//       return res.status(404).json({ message: "Không tìm thấy sự kiện" });
-
-//     res.json(event);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-// /* DELETE EVENT */
-// export const deleteEvent = async (req, res) => {
-//   try {
-//     const event = await Event.findOneAndDelete({
-//       _id: req.params.id,
-//       owner: req.user._id,
-//     });
-
-//     if (!event)
-//       return res.status(404).json({ message: "Không tìm thấy sự kiện" });
-
-//     res.json({ message: "Xóa thành công" });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
-// /* ADMIN: HIDE EVENT */
-// export const hideEvent = async (req, res) => {
-//   try {
-//     const event = await Event.findByIdAndUpdate(
-//       req.params.id,
-//       { isHidden: true },
-//       { new: true }
-//     );
-
-//     res.json(event);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-// export const getAllEvents = async (req, res) => {
-//   try {
-//     const events = await Event.find().populate("owner", "username email");
-//     res.json(events);
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
 import Event from "../models/Event.js";
 
 /* ================= CREATE EVENT ================= */
@@ -167,34 +73,33 @@ export const getAllEvents = async (req, res) => {
 export const updateEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
-    if (!event)
+    if (!event) {
       return res.status(404).json({ message: "Không tìm thấy sự kiện" });
-
-    // ❌ User không được sửa event do staff tạo
-    if (
-      req.user.role === "user" &&
-      event.createdBy.toString() !== req.user._id.toString()
-    ) {
-      return res
-        .status(403)
-        .json({ message: "Bạn không có quyền sửa sự kiện này" });
     }
 
-    // ❌ Staff không được sửa event do user tạo
-    if (
-      req.user.role === "staff" &&
-      event.createdBy.toString() !== req.user._id.toString()
-    ) {
-      return res
-        .status(403)
-        .json({ message: "Staff chỉ sửa event do mình tạo" });
+    const { title, description, startTime, endTime } = req.body;
+
+    // ✅ ép kiểu Date
+    const newStartTime = startTime ? new Date(startTime) : event.startTime;
+
+    const newEndTime = endTime ? new Date(endTime) : event.endTime;
+
+    // ✅ validate thời gian
+    if (newStartTime >= newEndTime) {
+      return res.status(400).json({ message: "Thời gian không hợp lệ" });
     }
 
-    Object.assign(event, req.body);
+    // ✅ update từng field
+    if (title !== undefined) event.title = title;
+    if (description !== undefined) event.description = description;
+    if (startTime !== undefined) event.startTime = newStartTime;
+    if (endTime !== undefined) event.endTime = newEndTime;
+
     await event.save();
 
     res.json(event);
   } catch (err) {
+    console.error("UPDATE EVENT ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };
