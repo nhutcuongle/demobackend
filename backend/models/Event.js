@@ -15,6 +15,11 @@ const eventSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true, // ai tạo (user hoặc staff)
+    },
 
     isHidden: { type: Boolean, default: false }, // admin có thể ẩn
   },
