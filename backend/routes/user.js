@@ -4,6 +4,7 @@ import {
   disableUser,
   enableUser,
   getAssignableUsers,
+  deleteUser,        // 👈 THÊM
 } from "../controller/userController.js";
 
 import {
@@ -18,10 +19,11 @@ const router = express.Router();
  * @swagger
  * tags:
  *   name: Users
- *   description: Quản lý người dùng (Admin)
+ *   description: Quản lý người dùng (Admin / Staff)
  */
 
 router.use(authenticate);
+
 /**
  * @swagger
  * /api/users/assignable:
@@ -32,17 +34,18 @@ router.use(authenticate);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Danh sách user
+ *         description: Danh sách user (role = user, chưa bị khóa)
  */
 router.get("/assignable", isStaff, getAssignableUsers);
 
+/* ================= ADMIN ONLY ================= */
 router.use(isAdmin);
 
 /**
  * @swagger
  * /api/users:
  *   get:
- *     summary: ADMIN lấy danh sách tất cả user
+ *     summary: ADMIN lấy danh sách user (chỉ role = user)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -69,6 +72,8 @@ router.get("/", getAllUsers);
  *     responses:
  *       200:
  *         description: Khóa user thành công
+ *       404:
+ *         description: Không tìm thấy user
  */
 router.put("/:id/disable", disableUser);
 
@@ -89,7 +94,34 @@ router.put("/:id/disable", disableUser);
  *     responses:
  *       200:
  *         description: Mở khóa user thành công
+ *       404:
+ *         description: Không tìm thấy user
  */
 router.put("/:id/enable", enableUser);
+
+/**
+ * @swagger
+ * /api/users/{id}:
+ *   delete:
+ *     summary: ADMIN xóa user (chỉ role = user)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID của user
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Xóa user thành công
+ *       404:
+ *         description: Không tìm thấy user
+ *       403:
+ *         description: Không có quyền admin
+ */
+router.delete("/:id", deleteUser);
 
 export default router;

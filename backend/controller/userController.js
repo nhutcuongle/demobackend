@@ -58,3 +58,19 @@ export const getAssignableUsers = async (req, res) => {
   }
 };
 
+/* ADMIN: DELETE USER (CHỈ ROLE = USER) */
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findOneAndDelete({
+      _id: req.params.id,
+      role: "user",
+    });
+
+    if (!user)
+      return res.status(404).json({ message: "Không tìm thấy user" });
+
+    res.json({ message: "Xóa user thành công" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
