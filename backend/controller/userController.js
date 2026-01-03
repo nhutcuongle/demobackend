@@ -42,3 +42,17 @@ export const enableUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+/* STAFF: GET USERS ĐỂ GÁN LỊCH */
+export const getAssignableUsers = async (req, res) => {
+  try {
+    const users = await User.find({
+      role: "user",
+      isDisabled: false,
+    }).select("_id username email");
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+

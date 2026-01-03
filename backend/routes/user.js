@@ -3,9 +3,14 @@ import {
   getAllUsers,
   disableUser,
   enableUser,
+  getAssignableUsers,
 } from "../controller/userController.js";
 
-import { authenticate, isAdmin } from "../middlewares/authMiddleware.js";
+import {
+  authenticate,
+  isAdmin,
+  isStaff,
+} from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -32,6 +37,19 @@ router.use(isAdmin);
  *         description: Danh sách user
  */
 router.get("/", getAllUsers);
+/**
+ * @swagger
+ * /api/users/assignable:
+ *   get:
+ *     summary: STAFF lấy danh sách user để gán lịch
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Danh sách user
+ */
+router.get("/assignable", authenticate, isStaff, getAssignableUsers);
 
 /**
  * @swagger
