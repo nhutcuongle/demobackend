@@ -10,7 +10,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:5000",
+        url: "https://demobackend-hx9f.onrender.com",
       },
     ],
     components: {
