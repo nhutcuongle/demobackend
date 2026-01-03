@@ -1,14 +1,16 @@
 import User from "../models/User.js";
 
 /* ADMIN: GET ALL USERS */
+/* ADMIN: GET ALL USERS (CHỈ ROLE = USER) */
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find({ role: "user" }).select("-password");
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 /* ADMIN: DISABLE USER */
 export const disableUser = async (req, res) => {
