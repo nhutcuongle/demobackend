@@ -99,28 +99,38 @@ import Event from "../models/Event.js";
 // - staff: tạo cho user khác
 export const createEvent = async (req, res) => {
   try {
-    const { title, startTime, endTime, owner } = req.body;
+    const { title, description, startTime, endTime, owner } = req.body;
 
-    if (!title || !startTime || !endTime)
+    if (!title || !startTime || !endTime) {
       return res.status(400).json({ message: "Thiếu dữ liệu" });
+    }
 
-    if (new Date(startTime) >= new Date(endTime))
+    if (new Date(startTime) >= new Date(endTime)) {
       return res.status(400).json({ message: "Thời gian không hợp lệ" });
+    }
 
-    // user -> owner = chính mình
-    // staff -> owner = user được chỉ định
-    const eventOwner =
-      req.user.role === "staff" && owner ? owner : req.user._id;
+    // staff BẮT BUỘC phải chọn user
+    if (req.user.role === "staff" && !owner) {
+      return res
+        .status(400)
+        .json({ message: "Staff phải chọn user để tạo sự kiện" });
+    }
+
+    const eventOwner = req.user.role === "staff" ? owner : req.user._id;
 
     const event = await Event.create({
-      ...req.body,
+      title,
+      description,
+      startTime,
+      endTime,
       owner: eventOwner,
       createdBy: req.user._id,
     });
 
-    res.status(201).json(event);
+    return res.status(201).json(event);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("CREATE EVENT ERROR:", err);
+    return res.status(500).json({ error: err.message });
   }
 };
 

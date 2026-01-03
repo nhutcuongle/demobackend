@@ -34,7 +34,8 @@ router.use(authenticate);
  *       200:
  *         description: Danh sách user
  */
-router.get("/assignable", authenticate, isStaff, getAssignableUsers);
+router.get("/assignable", isStaff, getAssignableUsers);
+
 router.use(isAdmin);
 
 /**
