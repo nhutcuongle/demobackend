@@ -1,10 +1,8 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-/* Xác thực token */
 export const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-
   if (!authHeader)
     return res.status(401).json({ message: "Thiếu token" });
 
@@ -12,10 +10,7 @@ export const authenticate = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findById(decoded.id).select(
-      "_id username role"
-    );
+    const user = await User.findById(decoded.id).select("_id role");
 
     if (!user)
       return res.status(401).json({ message: "User không tồn tại" });
@@ -23,13 +18,18 @@ export const authenticate = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    res.status(403).json({ message: "Token không hợp lệ" });
+    return res.status(401).json({ message: "Token không hợp lệ" });
   }
 };
 
-/* Chỉ admin */
 export const isAdmin = (req, res, next) => {
   if (req.user.role !== "admin")
     return res.status(403).json({ message: "Chỉ admin được phép" });
+  next();
+};
+
+export const isStaff = (req, res, next) => {
+  if (!["admin", "staff"].includes(req.user.role))
+    return res.status(403).json({ message: "Không đủ quyền" });
   next();
 };

@@ -13,10 +13,18 @@ const swaggerOptions = {
         url: "http://localhost:5000",
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
   },
-  apis: ["./routes/*.js"], // đọc comment trong routes
+  apis: ["./routes/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
-
 export default swaggerSpec;

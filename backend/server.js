@@ -3,10 +3,12 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import productRoutes from "./routes/product.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./config/swagger.js";
 import authRoutes from "./routes/auth.js";
+import eventRoutes from "./routes/event.js";
+import reminderRoutes from "./routes/reminder.js";
+import userRoutes from "./routes/user.js";
 
 dotenv.config();
 
@@ -17,8 +19,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use("/api/products", productRoutes);
+
 app.use("/api/auth", authRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/reminders", reminderRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
