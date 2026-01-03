@@ -154,21 +154,31 @@ export const getAllEvents = async (req, res) => {
 };
 
 /* ================= UPDATE EVENT ================= */
-// ❌ user KHÔNG được sửa
-// ✅ staff CHỈ sửa event do mình tạo
 export const updateEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event)
       return res.status(404).json({ message: "Không tìm thấy sự kiện" });
 
-    // chỉ staff được sửa
-    if (req.user.role !== "staff")
-      return res.status(403).json({ message: "Không có quyền sửa" });
+    // ❌ User không được sửa event do staff tạo
+    if (
+      req.user.role === "user" &&
+      event.createdBy.toString() !== req.user._id.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền sửa sự kiện này" });
+    }
 
-    // staff chỉ sửa event do mình tạo
-    if (event.createdBy.toString() !== req.user._id.toString())
-      return res.status(403).json({ message: "Không có quyền sửa sự kiện này" });
+    // ❌ Staff không được sửa event do user tạo
+    if (
+      req.user.role === "staff" &&
+      event.createdBy.toString() !== req.user._id.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Staff chỉ sửa event do mình tạo" });
+    }
 
     Object.assign(event, req.body);
     await event.save();
@@ -188,11 +198,25 @@ export const deleteEvent = async (req, res) => {
     if (!event)
       return res.status(404).json({ message: "Không tìm thấy sự kiện" });
 
-    if (req.user.role !== "staff")
-      return res.status(403).json({ message: "Không có quyền xóa" });
+    // ❌ User không được xóa event do staff tạo
+    if (
+      req.user.role === "user" &&
+      event.createdBy.toString() !== req.user._id.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Bạn không có quyền xóa sự kiện này" });
+    }
 
-    if (event.createdBy.toString() !== req.user._id.toString())
-      return res.status(403).json({ message: "Không có quyền xóa sự kiện này" });
+    // ❌ Staff không được xóa event do user tạo
+    if (
+      req.user.role === "staff" &&
+      event.createdBy.toString() !== req.user._id.toString()
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Staff chỉ xóa event do mình tạo" });
+    }
 
     await event.deleteOne();
     res.json({ message: "Xóa thành công" });
