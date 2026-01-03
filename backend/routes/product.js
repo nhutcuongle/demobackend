@@ -1,25 +1,4 @@
-// import express from "express";
-// import uploadProductImage from "../middlewares/uploadProduct.js";
-// import {
-//   getAllProducts,
-//   getProductById,
-//   createProduct,
-//   updateProduct,
-//   deleteProduct,
-// } from "../controller/productController.js";
 
-// const router = express.Router();
-
-// router.get("/", getAllProducts);
-// router.get("/:id", getProductById);
-
-// // 📸 upload image
-// router.post("/", uploadProductImage.single("image"), createProduct);
-// router.put("/:id", uploadProductImage.single("image"), updateProduct);
-
-// router.delete("/:id", deleteProduct);
-
-// export default router;
 import express from "express";
 import uploadProductImage from "../middlewares/uploadProduct.js";
 import {
